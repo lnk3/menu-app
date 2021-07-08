@@ -13,9 +13,3 @@ services:
     env_file: .env
     volumes:
       - ./mongodb/database:/data/db
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8082:8080
