@@ -1,0 +1,21 @@
+# I use the latest Docker-Compose version (3.8) and I have Docker 20.10 as an engine
+version: "3.8"
+
+# Next all the containers
+services:
+
+  db:
+    image: mongo
+    # restart policy is set to restart, unless stopped by the user
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    env_file: .env
+    volumes:
+      - ./mongodb/database:/data/db
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8082:8080
