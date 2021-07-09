@@ -9,6 +9,9 @@ environment:
 dependencies:
   #  path: ^1.7.0
   shelf: ^1.2.0
+  shelf_router: ^1.1.0
+  mongo_dart: ^0.7.0+2
+  intl: ^0.17.0
 
 dev_dependencies:
   pedantic: ^1.9.0
