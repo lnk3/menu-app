@@ -1,17 +1,66 @@
+import 'dart:async' show Future;
+import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as shelf_io;
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart';
+import 'database.dart';
 
-void main() async {
-  var handler =
-      const Pipeline().addMiddleware(logRequests()).addHandler(_echoRequest);
+class Service {
+  // The [Router] can be used to create a handler, which can be used with [shelf_io.serve].
+  Handler get handler {
+    final router = Router();
 
-  var server = await shelf_io.serve(handler, '0.0.0.0', 80);
+    router.mount('/menu/', Api().router);
 
-  // Enable content compression
-  server.autoCompress = true;
+    // Catch all verbs and use a URL-parameter with a regular expression
+    // that matches everything to catch app.
+    router.all('/<ignored|.*>', (Request request) {
+      return Response.notFound('Endpoint not found');
+    });
 
-  print('Serving at http://${server.address.host}:${server.port}');
+    return router;
+  }
 }
 
-Response _echoRequest(Request request) =>
-    Response.ok('Request for "${request.url}"');
+class Api {
+  Future<Response> _messages(Request request) async {
+    return Response.ok('{"lUca": "Prova"}');
+  }
+
+  // By exposing a [Router] for an object, it can be mounted in other routers.
+  Router get router {
+    final router = Router();
+
+    // A handler can have more that one route.
+    router.get('/messages', _messages);
+    router.get('/messages/', _messages);
+
+    // This nested catch-all, will only catch /api/.* when mounted above.
+    // Notice that ordering if annotated handlers and mounts is significant.
+    router.all('/<ignored|.*>', (Request request) => Response.notFound('null'));
+
+    return router;
+  }
+}
+
+void main() async {
+  // Connect to all DBs
+  final db_menu = Database('menu').getDB;
+  final db_classifica = Database('classifica').getDB;
+
+  await db_menu.open();
+  // await db_classifica.open();
+
+  var pranzo = db_menu.collection('pranzo');
+
+  var pasti = await pranzo.find().toList();
+  print(pasti);
+
+  await db_menu.close();
+
+  // Start the API server
+  // final service = Service();
+  // // Run shelf server and host a [Service] instance on port 80.
+  // final server = await io.serve(service.handler, '0.0.0.0', 80);
+  // print('Server running on localhost:${server.port}');
+}
