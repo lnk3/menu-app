@@ -13,3 +13,18 @@ services:
     env_file: .env
     volumes:
       - ./mongodb/database:/data/db
+
+  backend:
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    image: lnk3/be:v1
+    ports:
+      - "8081:80"
+    container_name: dart_backend
+    volumes:
+      - ./backend/:/app
+    links:
+      - db
+    depends_on:
+      - db
