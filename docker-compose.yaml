@@ -5,7 +5,7 @@ version: "3.8"
 services:
 
   db:
-    image: mongo
+    image: mongo:3.6
     # restart policy is set to restart, unless stopped by the user
     restart: unless-stopped
     ports:
