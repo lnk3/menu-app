@@ -10,21 +10,25 @@ services:
     restart: unless-stopped
     ports:
       - 27017:27017
-    env_file: .env
+    env_file: .db.env
     volumes:
       - ./mongodb/database:/data/db
 
   backend:
-    build:
-      context: backend/
-      dockerfile: Dockerfile
-    image: lnk3/be:v1
+    # build:
+    #   context: backend/
+    #   dockerfile: Dockerfile
+    # image: lnk3/be:v1
+    image: google/dart
+    volumes:
+      - ./backend:/backend
+    env_file:
+      - .be.env
+      - .db.env
     ports:
       - "8081:80"
-    container_name: dart_backend
-    volumes:
-      - ./backend/:/app
-    links:
-      - db
+    working_dir: /backend/
+     # Overrides default command so things don't shut down after the process ends.
+    command: /bin/sh -c "while sleep 1000; do :; done"
     depends_on:
       - db
