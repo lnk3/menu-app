@@ -1,11 +1,11 @@
 FROM google/dart
 
 # command performs mkdir and cd implicitly
-WORKDIR /app
+WORKDIR /backend
 
-ADD pubspec.* /app/
+ADD pubspec.* /backend/
 RUN pub get --no-precompile
-ADD ./ /app
+ADD ./ /backend
 RUN pub get --offline --no-precompile
 
 EXPOSE 80
